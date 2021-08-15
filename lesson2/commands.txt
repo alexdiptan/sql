@@ -149,3 +149,12 @@ mysql> show tables;
 +------------------+
 1 row in set (0,00 sec)
 
+mysql> describe users;
++-------+--------------+------+-----+---------+-------+
+| Field | Type         | Null | Key | Default | Extra |
++-------+--------------+------+-----+---------+-------+
+| id    | int          | YES  |     | NULL    |       |
+| name  | varchar(100) | YES  |     | NULL    |       |
++-------+--------------+------+-----+---------+-------+
+2 rows in set (0,00 sec)
+
