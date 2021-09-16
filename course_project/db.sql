@@ -75,6 +75,10 @@ CREATE TABLE IF NOT EXISTS repair_parts (
 	INDEX repair_parts_part_name_idx (part_name)	 
 );
 
+-- Услуги автосервиса (справочник).
+-- Причины обращения в автосервис (справочник).
+-- Справочник типов обращений в автосервис (плановый внеплановый).
+
 -- Ремонтные работы по автомобилю.
 CREATE TABLE IF NOT EXISTS car_repair_order (
 	id SERIAL PRIMARY KEY,
