@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS users_cars (
 	user_id BIGINT UNSIGNED, NOT NULL,
 	car_id BIGINT UNSIGNED, NOT NULL,
 	car_foto_id BIGINT UNSIGNED, NOT NULL,
-	car_made_year VARCHAR(150) NOT NULL,	
+	car_made_year VARCHAR(10) NOT NULL,
+	car_mileage VARCHAR(150) NOT NULL, -- пробег автомобиля
 	created_at DATETIME NOT NULL DEFAULT NOW(),
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	INDEX users_cars_created_at_idx (created_at),
