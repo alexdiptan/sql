@@ -5,14 +5,16 @@
  * БД может использоваться в приложении для учета ремонта авто. 
  */
 
+USE car_repair;
+
 -- В таблице храним пользователей.
 CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
 	first_name VARCHAR(150) NOT NULL,
 	last_name VARCHAR(150) NOT NULL,
-	email VARCHAR(150), NOT NULL UNIQUE,
+	email VARCHAR(150) NOT NULL UNIQUE,
 	created_at DATETIME NOT NULL DEFAULT NOW(),
-	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMPб
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	INDEX users_first_name_idx (first_name),
 	INDEX users_last_name_idx (last_name),
 	INDEX users_email_idx (email)
@@ -39,14 +41,18 @@ CREATE TABLE IF NOT EXISTS car_foto (
 
 -- Таблица связывает пользователей и автомобили, которые им принадлежат.
 CREATE TABLE IF NOT EXISTS users_cars (
-	id, SERIAL PRIMARY KEY,
-	user_id BIGINT UNSIGNED, NOT NULL,
-	car_id BIGINT UNSIGNED, NOT NULL,
-	car_foto_id BIGINT UNSIGNED, NOT NULL,
+	id SERIAL PRIMARY KEY,
+	user_id BIGINT UNSIGNED NOT NULL,
+	car_id BIGINT UNSIGNED NOT NULL,
+	car_foto_id BIGINT UNSIGNED NOT NULL,
 	car_made_year VARCHAR(10) NOT NULL,
 	car_mileage VARCHAR(150) NOT NULL, -- пробег автомобиля
+	car_vin_number VARCHAR(15) NOT NULL UNIQUE, -- Уникальный VIN-номер автомобиля
+	car_gos_number VARCHAR(10) NOT NULL UNIQUE, -- Гос номер автомобиля
 	created_at DATETIME NOT NULL DEFAULT NOW(),
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	INDEX users_car_vin_number_idx (car_vin_number),
+	INDEX users_car_gos_number_idx (car_gos_number),
 	INDEX users_cars_created_at_idx (created_at),
 	INDEX users_cars_updated_at_idx (updated_at),	
 	CONSTRAINT fk_users_cars_car_id FOREIGN KEY (car_id) REFERENCES cars(id),
@@ -61,7 +67,7 @@ CREATE TABLE IF NOT EXISTS car_repair_place (
 	repair_place_address VARCHAR(100) NOT NULL UNIQUE,
 	created_at DATETIME NOT NULL DEFAULT NOW(),
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	INDEX car_repair_place_repair_place_name_idx (repair_place_name)
+	INDEX car_repair_place_repair_place_name_idx (repair_place_name),
 	INDEX car_repair_place_repair_place_address_idx (repair_place_address)
 );
 
@@ -76,9 +82,30 @@ CREATE TABLE IF NOT EXISTS repair_parts (
 );
 
 -- Услуги автосервиса (справочник).
--- Причины обращения в автосервис (справочник).
--- Справочник типов обращений в автосервис (плановый внеплановый).
-
+CREATE TABLE IF NOT EXISTS car_repair_place_price_list (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	price VARCHAR(20) NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT NOW(),
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	INDEX car_repair_place_price_list_name_idx (name)
+);
+-- Причины обращения в автосервис (например: стук возле правого колеса) (справочник).
+CREATE TABLE IF NOT EXISTS repair_reasons (
+	id SERIAL PRIMARY KEY,
+	description VARCHAR(100) NOT NULL,	
+	created_at DATETIME NOT NULL DEFAULT NOW(),
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	INDEX repair_reasons_description_idx (description)
+);
+-- Справочник типов обращений в автосервис (плановый, внеплановый, ТО).
+CREATE TABLE IF NOT EXISTS type_reasons (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT NOW(),
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	INDEX type_reasons_name_idx (name)	
+);
 -- Ремонтные работы по автомобилю.
 CREATE TABLE IF NOT EXISTS car_repair_order (
 	id SERIAL PRIMARY KEY,
