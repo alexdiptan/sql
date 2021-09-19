@@ -171,3 +171,4 @@ CREATE TABLE IF NOT EXISTS car_repair_order (
 	CONSTRAINT fk_car_repair_order_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
 	CONSTRAINT fk_car_repair_order_part_name_id FOREIGN KEY (part_name_id) REFERENCES repair_parts(id)
 );
+tst
