@@ -1,3 +1,5 @@
+-- Получить последний id можно функцией last_insert_id()
+
 -- используем функцию TIMESTAMPDIFF для вычисления возраста из дня рожения.
 SELECT TIMESTAMPDIFF(YEAR, pf.birthday, NOW()) FROM profiles pf
 -- раскрыть группу можно при помощи функции GROUP_CONCAT или ARRAY_CONCAT. Методичка урока 4. Примеры:
