@@ -115,15 +115,17 @@ CREATE TABLE IF NOT EXISTS car_repair_place_service_price_list (
 	id SERIAL PRIMARY KEY,
 	car_repair_place_id BIGINT UNSIGNED NOT NULL,
 	service_name VARCHAR(100) NOT NULL, -- наименование оказанной услуги
-	price VARCHAR(20) NOT NULL,
+	price VARCHAR(20) NOT NULL, -- цена услуги
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	INDEX car_repair_place_service_price_list_name_idx (name),
-	CONSTRAINT fk_car_repair_place_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
+	CONSTRAINT fk_car_repair_place_service_price_list_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
 );
 
 INSERT INTO car_repair_place_price_list (id, car_repair_place_id, service_name, price, created_at, updated_at) VALUES
-    (DEFAULT, 1, 'Замена топливного фильтра')
+    (DEFAULT, 1, 'Замена топливного фильтра', '2000', DEFAULT, DEFAULT)
+    ,(DEFAULT, 1, 'Замена маслянного фильтра', '300', DEFAULT, DEFAULT)
+    ,(DEFAULT, 1, 'Замена моторного масла', '200', DEFAULT, DEFAULT)
 ;
 
 -- Причины обращения в автосервис (например: стук возле правого колеса) (справочник).
@@ -131,9 +133,11 @@ CREATE TABLE IF NOT EXISTS repair_reasons (
 	id SERIAL PRIMARY KEY,
 	description VARCHAR(100) NOT NULL,	
 	created_at DATETIME NOT NULL DEFAULT NOW(),
-	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	INDEX repair_reasons_description_idx (description)
 );
+
+INSERT INTO repair_reasons (id, description, created_at) VALUES
+    (DEFAULT, 'Пропадает тяга при нажатии педали газа.', DEFAULT)
 
 -- Запасные части (справочник).
 CREATE TABLE IF NOT EXISTS repair_parts (
@@ -171,4 +175,3 @@ CREATE TABLE IF NOT EXISTS car_repair_order (
 	CONSTRAINT fk_car_repair_order_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
 	CONSTRAINT fk_car_repair_order_part_name_id FOREIGN KEY (part_name_id) REFERENCES repair_parts(id)
 );
-tst
