@@ -10,8 +10,8 @@
  * БД может использоваться в приложении для учета ремонта авто. 
  */
 
-DROP DATABASE car_repair IF EXISTS;
-CREATE DATABASE car_repair IF NOT EXISTS;
+DROP DATABASE IF EXISTS car_repair;
+CREATE DATABASE IF NOT EXISTS car_repair;
 USE car_repair;
 
 -- В таблице храним пользователей.
@@ -48,9 +48,14 @@ CREATE TABLE IF NOT EXISTS cars (
 	id SERIAL PRIMARY KEY,
 	auto_maker VARCHAR(150) NOT NULL UNIQUE, -- Марка автомобиля
 	car_model VARCHAR(150) NOT NULL UNIQUE, -- Модель автомобиля
-	created_at DATETIME NOT NULL DEFAULT NOW(),
-	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP	
 );
+
+INSERT INTO cars (id, auto_maker, car_model, created_at) VALUES
+	(DEFAULT, 'Nissan', 'Quasqai', DEFAULT)
+	,(DEFAULT, 'Toyota', 'Celica', DEFAULT)
+	,(DEFAULT, 'BMW', 'X5', DEFAULT)
+;
 
 -- Фото автомобиля.
 CREATE TABLE IF NOT EXISTS car_photo (
@@ -94,6 +99,8 @@ CREATE TABLE IF NOT EXISTS users_cars (
 	CONSTRAINT fk_users_cars_car_photo_id FOREIGN KEY (car_photo_id) REFERENCES car_photo(id)
 );
 
+
+
 -- Мастерская где были выполнены работы (справочник).
 CREATE TABLE IF NOT EXISTS car_repair_place (
 	id SERIAL PRIMARY KEY,
@@ -104,10 +111,10 @@ CREATE TABLE IF NOT EXISTS car_repair_place (
 	INDEX car_repair_place_repair_place_address_idx (repair_place_address)
 );
 
-INSERT INTO car_repair_place (id, repair_place_name, repair_place_address, created_at) VALUES (
+INSERT INTO car_repair_place (id, repair_place_name, repair_place_address, created_at) VALUES 
      (DEFAULT, 'ООО "Автомеханик"', 'г. Краснодар, ул. Московская 96.', DEFAULT)
     ,(DEFAULT, 'Тюнинг ателье дядя Серёжа', 'г. Усть-Лабинск, ул. Промышленная, д. 21', DEFAULT)
-);
+;
 
 -- Услуги автосервиса (справочник). У разных автосерисов цены на услуги разные.
 -- Соединяем автосервис с наименованием работ и добавляем цену работ.
@@ -118,11 +125,11 @@ CREATE TABLE IF NOT EXISTS car_repair_place_service_price_list (
 	price VARCHAR(20) NOT NULL, -- цена услуги
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	INDEX car_repair_place_service_price_list_name_idx (name),
-	CONSTRAINT fk_car_repair_place_service_price_list_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
+	INDEX car_repair_place_service_price_list_name_idx (service_name),
+	CONSTRAINT fk_car_repair_place_service_price_list_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id)
 );
 
-INSERT INTO car_repair_place_price_list (id, car_repair_place_id, service_name, price, created_at, updated_at) VALUES
+INSERT INTO car_repair_place_service_price_list (id, car_repair_place_id, service_name, price, created_at, updated_at) VALUES
     (DEFAULT, 1, 'Замена топливного фильтра', '2000', DEFAULT, DEFAULT)
     ,(DEFAULT, 1, 'Замена маслянного фильтра', '300', DEFAULT, DEFAULT)
     ,(DEFAULT, 1, 'Замена моторного масла', '200', DEFAULT, DEFAULT)
@@ -138,6 +145,7 @@ CREATE TABLE IF NOT EXISTS repair_reasons (
 
 INSERT INTO repair_reasons (id, description, created_at) VALUES
     (DEFAULT, 'Пропадает тяга при нажатии педали газа.', DEFAULT)
+;
 
 -- Запасные части (справочник).
 CREATE TABLE IF NOT EXISTS repair_parts (
@@ -158,10 +166,15 @@ INSERT INTO repair_parts (id, part_name, part_price, created_at) VALUES
 CREATE TABLE IF NOT EXISTS type_reasons (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(100) NOT NULL,
-	created_at DATETIME NOT NULL DEFAULT NOW(),
-	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,	
 	INDEX type_reasons_name_idx (name)	
 );
+
+INSERT INTO type_reasons (id, name, created_at) VALUES 
+	(DEFAULT, 'Плановый ремонт.', DEFAULT)
+	,(DEFAULT, 'Внеплановый ремонт.', DEFAULT)
+	,(DEFAULT, 'Очередное ТО.', DEFAULT)
+;
 
 -- Ремонтные работы по автомобилю.
 CREATE TABLE IF NOT EXISTS car_repair_order (
