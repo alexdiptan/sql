@@ -99,7 +99,11 @@ CREATE TABLE IF NOT EXISTS users_cars (
 	CONSTRAINT fk_users_cars_car_photo_id FOREIGN KEY (car_photo_id) REFERENCES car_photo(id)
 );
 
-
+INSERT INTO users_cars (id, user_id, car_id, car_photo_id, car_made_year, car_mileage, car_vin_number, car_gos_number,
+created_at, updated_at) VALUES
+    (DEFAULT, 1, 1, 4, '2017', '42400', 'VSS013B99001000', 'Е093КХ93', DEFAULT, DEFAULT)
+    ,(DEFAULT, 2, 1, 4, '2006', '147192', 'VSS013B990010ZZ', 'М393КС193', DEFAULT, DEFAULT)
+;
 
 -- Мастерская где были выполнены работы (справочник).
 CREATE TABLE IF NOT EXISTS car_repair_place (
@@ -181,10 +185,15 @@ CREATE TABLE IF NOT EXISTS car_repair_order (
 	id SERIAL PRIMARY KEY,
 	users_cars_id BIGINT UNSIGNED NOT NULL,
 	car_repair_place_id BIGINT UNSIGNED NOT NULL,
-	part_name_id BIGINT UNSIGNED NOT NULL,	
+	part_name_id BIGINT UNSIGNED NOT NULL,
+	type_reasons_id
 	created_at DATETIME NOT NULL DEFAULT NOW(),
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT fk_car_repair_order_users_cars_id FOREIGN KEY (users_cars_id) REFERENCES users_cars(id),
 	CONSTRAINT fk_car_repair_order_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
 	CONSTRAINT fk_car_repair_order_part_name_id FOREIGN KEY (part_name_id) REFERENCES repair_parts(id)
 );
+
+INSERT INTO car_repair_place (id, users_cars_id, car_repair_place_id, part_name_id, created_at, updated_at) VALUES
+    (DEFAULT, 1, 2, 1)
+;
