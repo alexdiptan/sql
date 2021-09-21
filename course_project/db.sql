@@ -186,14 +186,17 @@ CREATE TABLE IF NOT EXISTS car_repair_order (
 	users_cars_id BIGINT UNSIGNED NOT NULL,
 	car_repair_place_id BIGINT UNSIGNED NOT NULL,
 	part_name_id BIGINT UNSIGNED NOT NULL,
-	type_reasons_id
+	type_reasons_id BIGINT UNSIGNED NOT NULL,
+	repair_reasons_id BIGINT UNSIGNED NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT NOW(),
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT fk_car_repair_order_users_cars_id FOREIGN KEY (users_cars_id) REFERENCES users_cars(id),
 	CONSTRAINT fk_car_repair_order_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
-	CONSTRAINT fk_car_repair_order_part_name_id FOREIGN KEY (part_name_id) REFERENCES repair_parts(id)
+	CONSTRAINT fk_car_repair_order_part_name_id FOREIGN KEY (part_name_id) REFERENCES repair_parts(id),
+	CONSTRAINT fk_car_repair_order_type_reasons_id FOREIGN KEY (type_reasons_id) REFERENCES type_reasons(id),
+	CONSTRAINT fk_car_repair_order_repair_reasons_id FOREIGN KEY (repair_reasons_id) REFERENCES repair_reasons(id)
 );
 
-INSERT INTO car_repair_place (id, users_cars_id, car_repair_place_id, part_name_id, created_at, updated_at) VALUES
-    (DEFAULT, 1, 2, 1)
+INSERT INTO car_repair_order (id, users_cars_id, car_repair_place_id, part_name_id, type_reasons_id, repair_reasons_id, created_at, updated_at) VALUES
+    (DEFAULT, 1, 2, 1, 1, 1, DEFAULT, DEFAULT)
 ;
