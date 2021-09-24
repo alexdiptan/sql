@@ -1,3 +1,8 @@
+-- Отключить FOREIGN_KEY
+SET FOREIGN_KEY_CHECKS=0;
+TRUNCATE users;
+SET FOREIGN_KEY_CHECKS=1;
+
 -- Получить последний id можно функцией last_insert_id()
 
 -- используем функцию TIMESTAMPDIFF для вычисления возраста из дня рожения.
