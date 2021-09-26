@@ -121,23 +121,36 @@ INSERT INTO car_repair_place (id, repair_place_name, repair_place_address, creat
 ;
 
 -- Услуги автосервиса (справочник). У разных автосерисов цены на услуги разные.
--- Соединяем автосервис с наименованием работ и добавляем цену работ.
-CREATE TABLE IF NOT EXISTS car_repair_place_service_price_list (
+CREATE TABLE IF NOT EXISTS service_price_list (
 	id SERIAL PRIMARY KEY,
-	car_repair_place_id BIGINT UNSIGNED NOT NULL,
-	service_name VARCHAR(100) NOT NULL, -- наименование оказанной услуги
-	price VARCHAR(20) NOT NULL, -- цена услуги
+	service_name VARCHAR(100) NOT NULL, -- наименование оказанной услуги	
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	INDEX car_repair_place_service_price_list_name_idx (service_name),
-	CONSTRAINT fk_car_repair_place_service_price_list_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id)
+	INDEX service_price_list_name_idx (service_name)	
 );
 
-INSERT INTO car_repair_place_service_price_list (id, car_repair_place_id, service_name, price, created_at, updated_at) VALUES
-    (DEFAULT, 1, 'Замена топливного фильтра', '2000', DEFAULT, DEFAULT)
-    ,(DEFAULT, 1, 'Замена маслянного фильтра', '300', DEFAULT, DEFAULT)
-    ,(DEFAULT, 1, 'Замена моторного масла', '200', DEFAULT, DEFAULT)
+INSERT INTO service_price_list (id, service_name, created_at, updated_at) VALUES
+    (DEFAULT, 'Замена топливного фильтра', DEFAULT, DEFAULT)
+    ,(DEFAULT, 'Замена маслянного фильтра', DEFAULT, DEFAULT)
+    ,(DEFAULT, 'Замена моторного масла', DEFAULT, DEFAULT)
 ;
+
+-- Соединяем автосервис с наименованием работ и добавляем цену работ.
+CREATE TABLE IF NOT EXISTS crp_price_list (
+	id SERIAL PRIMARY KEY,
+	car_repair_place_id BIGINT UNSIGNED NOT NULL,
+	service_price_list_id BIGINT UNSIGNED NOT NULL,
+	price VARCHAR(20) NOT NULL, -- цена услуги
+	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT fk_crp_price_list_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
+	CONSTRAINT fk_crp_price_list_service_price_list_id FOREIGN KEY (service_price_list_id) REFERENCES service_price_list(id)
+)
+;
+
+INSERT INTO crp_price_list (id, car_repair_place_id, service_price_list_id, price, updated_at) VALUES
+(DEFAULT, 2, 1, '2000', DEFAULT)
+;
+
 
 -- Причины обращения в автосервис (например: стук возле правого колеса) (справочник).
 CREATE TABLE IF NOT EXISTS repair_reasons (
@@ -184,19 +197,19 @@ INSERT INTO type_reasons (id, name, created_at) VALUES
 CREATE TABLE IF NOT EXISTS car_repair_order (
 	id SERIAL PRIMARY KEY,
 	users_cars_id BIGINT UNSIGNED NOT NULL,
-	car_repair_place_id BIGINT UNSIGNED NOT NULL,
+	crp_price_list_id BIGINT UNSIGNED NOT NULL,
 	part_name_id BIGINT UNSIGNED NOT NULL,
 	type_reasons_id BIGINT UNSIGNED NOT NULL,
 	repair_reasons_id BIGINT UNSIGNED NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT NOW(),
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT fk_car_repair_order_users_cars_id FOREIGN KEY (users_cars_id) REFERENCES users_cars(id),
-	CONSTRAINT fk_car_repair_order_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
+	CONSTRAINT fk_car_repair_order_crp_price_list_id FOREIGN KEY (crp_price_list_id) REFERENCES crp_price_list(id),
 	CONSTRAINT fk_car_repair_order_part_name_id FOREIGN KEY (part_name_id) REFERENCES repair_parts(id),
 	CONSTRAINT fk_car_repair_order_type_reasons_id FOREIGN KEY (type_reasons_id) REFERENCES type_reasons(id),
 	CONSTRAINT fk_car_repair_order_repair_reasons_id FOREIGN KEY (repair_reasons_id) REFERENCES repair_reasons(id)
 );
 
-INSERT INTO car_repair_order (id, users_cars_id, car_repair_place_id, part_name_id, type_reasons_id, repair_reasons_id, created_at, updated_at) VALUES
-    (DEFAULT, 1, 2, 1, 1, 1, DEFAULT, DEFAULT)
+INSERT INTO car_repair_order (id, users_cars_id, crp_price_list_id, part_name_id, type_reasons_id, repair_reasons_id, created_at, updated_at) VALUES
+    (DEFAULT, 1, 1, 1, 2, 1, DEFAULT, DEFAULT)
 ;
