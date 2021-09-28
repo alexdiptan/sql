@@ -135,20 +135,36 @@ INSERT INTO service_price_list (id, service_name, created_at, updated_at) VALUES
     ,(DEFAULT, 'Замена моторного масла', DEFAULT, DEFAULT)
 ;
 
+-- Справочник валюты
+CREATE TABLE currency_types (
+	id SERIAL PRIMARY KEY,
+	currency_code VARCHAR(5) NOT NULL,
+	currency_name VARCHAR(50) NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+;
+
+INSERT INTO currency_types (id, currency_code, currency_name, created_at) VALUES 
+	(DEFAULT, 'RUR', 'Российский рубль', DEFAULT),
+	(DEFAULT, 'USD', 'Доллар США', DEFAULT)
+;
+
 -- Соединяем автосервис с наименованием работ и добавляем цену работ.
 CREATE TABLE IF NOT EXISTS crp_price_list (
 	id SERIAL PRIMARY KEY,
 	car_repair_place_id BIGINT UNSIGNED NOT NULL,
 	service_price_list_id BIGINT UNSIGNED NOT NULL,
 	price VARCHAR(20) NOT NULL, -- цена услуги
+	curr_id BIGINT UNSIGNED NOT NULL,
 	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT fk_crp_price_list_car_repair_place_id FOREIGN KEY (car_repair_place_id) REFERENCES car_repair_place(id),
-	CONSTRAINT fk_crp_price_list_service_price_list_id FOREIGN KEY (service_price_list_id) REFERENCES service_price_list(id)
+	CONSTRAINT fk_crp_price_list_service_price_list_id FOREIGN KEY (service_price_list_id) REFERENCES service_price_list(id),
+	CONSTRAINT fk_crp_price_list_curr_id FOREIGN KEY (curr_id) REFERENCES currency_types(id)
 )
 ;
 
-INSERT INTO crp_price_list (id, car_repair_place_id, service_price_list_id, price, updated_at) VALUES
-(DEFAULT, 2, 1, '2000', DEFAULT)
+INSERT INTO crp_price_list (id, car_repair_place_id, service_price_list_id, price, curr_id, updated_at) VALUES
+(DEFAULT, 2, 1, '2000', 1,  DEFAULT)
 ;
 
 
@@ -169,14 +185,16 @@ CREATE TABLE IF NOT EXISTS repair_parts (
 	id SERIAL PRIMARY KEY,
 	part_name VARCHAR(100) NOT NULL,
 	part_price VARCHAR(20) NOT NULL,
+	curr_id BIGINT UNSIGNED NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT NOW(),
-	INDEX repair_parts_part_name_idx (part_name)
+	INDEX repair_parts_part_name_idx (part_name),
+	CONSTRAINT fk_repair_parts_curr_id FOREIGN KEY (curr_id) REFERENCES currency_types(id)
 );
 
-INSERT INTO repair_parts (id, part_name, part_price, created_at) VALUES
-     (DEFAULT, 'Топливный фильтр MATSUTO', '1758', DEFAULT)
-    ,(DEFAULT, 'Маслянный фильтр DENSO', '300', DEFAULT)
-    ,(DEFAULT, 'Масло моторное Nissan orginal 5w40, 5 литров', '2450', DEFAULT)
+INSERT INTO repair_parts (id, part_name, part_price, curr_id, created_at) VALUES
+     (DEFAULT, 'Топливный фильтр MATSUTO', '1758', 1, DEFAULT)
+    ,(DEFAULT, 'Маслянный фильтр DENSO', '300', 1, DEFAULT)
+    ,(DEFAULT, 'Масло моторное Nissan orginal 5w40, 5 литров', '2450', 1, DEFAULT)
 ;
 
 -- Справочник типов обращений в автосервис (плановый, внеплановый, ТО).
