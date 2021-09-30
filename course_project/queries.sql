@@ -22,3 +22,14 @@ JOIN repair_parts rp ON rp.id = cro.part_name_id
 JOIN car_repair_place crp ON crp.id = cpl.car_repair_place_id 
 JOIN service_price_list spl ON spl.id = cpl.service_price_list_id 
 ;
+
+-- TRIGGER ON car_repair_order
+DROP TRIGGER IF EXISTS trg_log_car_repair_order;
+delimiter //
+CREATE TRIGGER trg_log_car_repair_order AFTER INSERT ON users
+FOR EACH ROW
+BEGIN
+	INSERT INTO log_car_repair_order (table_name, inserted_id, inserted_at)
+	VALUES ('car_repair_order', NEW.id, NOW());
+END //
+delimiter ;

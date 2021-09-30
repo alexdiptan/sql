@@ -231,3 +231,11 @@ CREATE TABLE IF NOT EXISTS car_repair_order (
 INSERT INTO car_repair_order (id, users_cars_id, crp_price_list_id, part_name_id, type_reasons_id, repair_reasons_id, created_at, updated_at) VALUES
     (DEFAULT, 1, 1, 1, 2, 1, DEFAULT, DEFAULT)
 ;
+
+-- Создаю таблицу для логирования создания новых наряд-заказов на ремонт автомобиля
+DROP TABLE IF EXISTS log_car_repair_order;
+CREATE TABLE log_car_repair_order (
+	table_name VARCHAR(30) NOT NULL,
+	inserted_id BIGINT(10) UNSIGNED NOT NULL,
+	inserted_at DATETIME NOT NULL
+) ;
